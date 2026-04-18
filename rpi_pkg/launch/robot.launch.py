@@ -14,6 +14,12 @@ def generate_launch_description():
         description='Lancer le nœud caméra (true/false)',
     )
 
+    enable_serial_arg = DeclareLaunchArgument(
+        'enable_serial',
+        default_value='true',
+        description='Lancer le nœud série (true/false)',
+    )
+
     serial_port_arg = DeclareLaunchArgument(
         'serial_port',
         default_value='/dev/ttyACM0',
@@ -42,6 +48,7 @@ def generate_launch_description():
             'serial_port': LaunchConfiguration('serial_port'),
             'baud_rate':   LaunchConfiguration('baud_rate'),
         }],
+        condition=IfCondition(LaunchConfiguration('enable_serial')),
     )
 
     camera_node = Node(
@@ -49,13 +56,18 @@ def generate_launch_description():
         executable='camera_node',
         name='camera_node',
         output='screen',
+        parameters=[{
+            'camera_device': LaunchConfiguration('camera_device'),
+        }],
         condition=IfCondition(LaunchConfiguration('enable_camera')),
     )
 
     return LaunchDescription([
         enable_camera_arg,
+        enable_serial_arg,
         serial_port_arg,
         baud_rate_arg,
+        camera_device,
         serial_node,
         camera_node,
     ])
