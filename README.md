@@ -138,6 +138,56 @@ ros2 run rqt_image_view rqt_image_view /image_raw
 ```
 
 
+## Lidar 2D (RPLidar) et odométrie
+
+Le robot peut être équipé d’un **lidar 2D RPLidar** pour permettre :
+
+* la perception de l’environnement (`/scan`)
+* l’estimation du mouvement (odométrie lidar via RF2O)
+* la cartographie (SLAM)
+
+### Lancer le driver RPLidar
+
+```bash
+ros2 launch rplidar_ros view_rplidar_a1_launch.py
+```
+
+Ce nœud publie le topic :
+
+| Topic   | Type                    | Description   |
+| ------- | ----------------------- | ------------- |
+| `/scan` | `sensor_msgs/LaserScan` | Données lidar |
+
+
+### Odométrie lidar (RF2O)
+
+Le launch principal `robot.launch.py` inclut **RF2O** qui permet d’estimer le mouvement du robot à partir du lidar.
+
+Il publie :
+
+* `/odom`
+* la transform TF : `odom -> base_link`
+
+
+### Cartographie (SLAM)
+
+Pour générer une carte de l’environnement :
+
+```bash
+ros2 launch slam_toolbox online_async_launch.py \
+  slam_params_file:=/home/user/your_dir/slam_params.yaml \
+  use_sim_time:=false
+```
+
+⚠️ Remplacer le chemin par celui de votre fichier `slam_params.yaml`.
+
+
+### Pipeline global
+
+```text
+/scan → RF2O → odom → slam_toolbox → map
+```
+
 ## Dépannage
 
 **Port série non trouvé**

@@ -20,6 +20,12 @@ def generate_launch_description():
         description='Lancer le nœud série (true/false)',
     )
 
+    enable_rf2o_arg = DeclareLaunchArgument(
+        'enable_rf2o',
+        default_value='true',
+        description='Lancer RF2O (true/false)',
+    )
+
     serial_port_arg = DeclareLaunchArgument(
         'serial_port',
         default_value='/dev/ttyACM0',
@@ -62,12 +68,30 @@ def generate_launch_description():
         condition=IfCondition(LaunchConfiguration('enable_camera')),
     )
 
+    odom_node = Node(
+                package='rf2o_laser_odometry',
+                executable='rf2o_laser_odometry_node',
+                name='rf2o_laser_odometry',
+                output='screen',
+                parameters=[{
+                    'laser_scan_topic' : '/scan',
+                    'odom_topic' : '/odom_rf2o',
+                    'publish_tf' : True,
+                    'base_frame_id' : 'base_link',
+                    'odom_frame_id' : 'odom',
+                    'init_pose_from_topic' : '',
+                    'freq' : 20.0}],
+                condition=IfCondition(LaunchConfiguration('enable_rf2o')),
+            )
+
     return LaunchDescription([
         enable_camera_arg,
         enable_serial_arg,
+        enable_rf2o_arg,
         serial_port_arg,
         baud_rate_arg,
         camera_device,
         serial_node,
         camera_node,
+        odom_node,
     ])
