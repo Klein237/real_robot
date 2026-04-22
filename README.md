@@ -74,6 +74,31 @@ pip install pyserial opencv-python
 sudo apt install ros-$ROS_DISTRO-cv-bridge
 ```
 
+### Packages ROS2 complémentaires pour le lidar
+
+Pour avoir toutes les fonctionnalités du dépôt, et en particulier utiliser le **lidar** et l’odométrie laser, il faut aussi cloner les packages suivants dans le workspace ROS2 :
+
+- `rplidar_ros` : driver du lidar, publie `/scan`
+- `rf2o_laser_odometry` : calcule `/odom` à partir du lidar
+
+Exemple :
+
+```bash
+cd ~/ros2_ws/src
+git clone https://github.com/Slamtec/rplidar_ros.git
+git clone https://github.com/MAPIRlab/rf2o_laser_odometry.git
+```
+
+Ensuite, reconstruire le workspace :
+
+```bash
+cd ~/ros2_ws
+colcon build
+source install/setup.bash
+```
+
+Sans ces deux packages, le répertoire ne fournit pas toutes les fonctions liées au lidar, et le launch `robot.launch.py` ne pourra pas démarrer la partie RF2O.
+
 ### Build du package
 
 ```bash
